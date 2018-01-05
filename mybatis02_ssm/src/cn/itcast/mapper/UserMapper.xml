@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.itcast.mapper.UserMapper">
+	<!-- type：实体类 id：唯一标识 的作用 -->
+	<resultMap type="order" id="orderMap">
+		<!--id主键 column：表字段 property:实体类属性名 -->
+		<id column="id" property="id" />
+		<result column="user_id" property="userId" />
+		<result column="number" property="number" />
+		<result column="createtime" property="createtime" />
+		<result column="note" property="note" />
+	</resultMap>
+
+	<select id="quereyByid" parameterType="int" resultType="user">
+		select *
+		from user where id=#{id}
+	</select>
+	<select id="quereyByUserName" parameterType="userivo"
+		resultType="user">
+		select * from user where username like '%${user.username}%'
+	</select>
+	<!-- 使用ordermap作为返回值 -->
+	<select id="quereyUserOrderByid" resultMap="orderMap">
+		select * from `order`
+	</select>
+	<!--使用if判断 -->
+	<select id="quereyUserBysex" parameterType="user" resultType="user">
+		SELECT id, username, birthday, sex, address FROM `user`
+		<where>
+			<if test="sex!=null and sex!=''">
+				and sex = #{sex}
+			</if>
+			<if test="username !=null and username!=''">
+				and username like '%${username}%'
+			</if>
+		</where>
+	</select>
+	<select id="quereyUserIds" parameterType="userivo" resultType="user">
+		select <include refid="userIds"/> from `user`
+		<where>
+			collection:属性名  open:开始时候 close结束 separator 每遍历一次后添加  item:每次遍历的属性
+			<foreach collection="ids" open="id in (" close=")" item="item" separator=",">
+			${item}
+			</foreach>
+		</where>
+	</select>
+	<sql id="userIds">id,username,birthday</sql> 
+</mapper>
